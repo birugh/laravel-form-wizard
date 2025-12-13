@@ -1,5 +1,6 @@
 <?php
 
+use App\OnboardingStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,21 +14,26 @@ return new class extends Migration
     {
         Schema::create('employee_onboardings', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['draft', 'submitted'])->default('draft');
 
-            // Step 1
+            // Status lifecycle
+            $table->string('status')
+                ->default(OnboardingStatus::DRAFT->value);
+
+            // STEP 1 (WAJIB ADA)
             $table->json('personal_information');
 
-            // Step 2
+            // STEP 2–4 (BOLEH NULL SAAT DRAFT)
             $table->json('job_details')->nullable();
-
-            // Step 3
             $table->json('access_rights')->nullable();
 
-            // Step 4
-            $table->json('evidences')->nullable();
+            // Admin creator
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete();
 
-            $table->foreignId('created_by')->constrained('users');
+            // Locking mechanism
+            $table->timestamp('submitted_at')->nullable();
+
             $table->timestamps();
         });
     }
