@@ -23,16 +23,16 @@ class StoreAccessRightsRequest extends FormRequest
     {
         return [
             // System Access
-            'communication_tools' => 'sometimes|required|array',
+            'communication_tools' => 'nullable|array',
             'communication_tools.*' => 'string',
 
-            'technical_tools' => 'sometimes|required|array',
+            'technical_tools' => 'nullable|array',
             'technical_tools.*' => 'string',
 
             // Facility Access
-            'access_level' => 'sometimes|required|string',
+            'access_level' => 'nullable|string',
 
-            'specific_zones' => 'sometimes|required|array',
+            'specific_zones' => 'nullable|array',
             'specific_zones.*' => 'string',
         ];
     }

@@ -22,10 +22,10 @@ class StorePersonalInformationRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required|string',
-            'emergency_contact' => 'required|string',
+            'name' => 'nullable|string',
+            'email' => 'nullable|email|unique:users,email',
+            'phone' => 'nullable|string',
+            'emergency_contact' => 'nullable|string',
         ];
     }
 }

@@ -22,11 +22,11 @@ class StoreJobDetailsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'department' => 'sometimes|required|string',
-            'job_title' => 'sometimes|required|string',
-            'join_date' => 'sometimes|required|date',
-            'work_arrangement' => 'sometimes|required|in:WFO,Remote,Hybrid',
-            'device_request' => 'sometimes|required|in:MacBook,Laptop',
+            'department' => 'nullable|string',
+            'job_title' => 'nullable|string',
+            'join_date' => 'nullable|date',
+            'work_arrangement' => 'nullable|in:WFO,Remote,Hybrid',
+            'device_request' => 'nullable|in:MacBook,Laptop',
         ];
     }
 }
