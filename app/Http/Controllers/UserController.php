@@ -18,7 +18,10 @@ class UserController extends Controller
             ->latest()
             ->paginate(10);
 
-        return UserResource::collection($users);
+        return UserResource::collection($users)->additional([
+            'success' => true,
+            'message' => 'Users retrieved successfully',
+        ]);
     }
 
     /**

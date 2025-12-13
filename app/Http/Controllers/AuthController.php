@@ -28,6 +28,12 @@ class AuthController extends Controller
             ], 401);
         }
 
+        if (!$user->is_active) {
+            return response()->json([
+                'message' => 'Account is inactive'
+            ], 403);
+        }
+
         $tokenString = Str::random(60);
 
         $apiToken = ApiToken::create([
@@ -36,7 +42,7 @@ class AuthController extends Controller
             'expires_at' => now()->addDay(7),
         ]);
 
-        Auth::setUser($user);
+        // Auth::setUser($user);
 
         return (new ApiTokenResource($apiToken))
             ->additional([
