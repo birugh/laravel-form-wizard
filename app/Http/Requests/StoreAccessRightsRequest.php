@@ -11,7 +11,7 @@ class StoreAccessRightsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,18 @@ class StoreAccessRightsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            // System Access
+            'communication_tools' => 'sometimes|required|array',
+            'communication_tools.*' => 'string',
+
+            'technical_tools' => 'sometimes|required|array',
+            'technical_tools.*' => 'string',
+
+            // Facility Access
+            'access_level' => 'sometimes|required|string',
+
+            'specific_zones' => 'sometimes|required|array',
+            'specific_zones.*' => 'string',
         ];
     }
 }

@@ -11,7 +11,7 @@ class StoreJobDetailsRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreJobDetailsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'department' => 'sometimes|required|string',
+            'job_title' => 'sometimes|required|string',
+            'join_date' => 'sometimes|required|date',
+            'work_arrangement' => 'sometimes|required|in:WFO,Remote,Hybrid',
+            'device_request' => 'sometimes|required|in:MacBook,Laptop',
         ];
     }
 }

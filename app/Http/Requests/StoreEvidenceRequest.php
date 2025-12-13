@@ -11,7 +11,7 @@ class StoreEvidenceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class StoreEvidenceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'files' => 'sometimes|required|array',
+            'files.*' => 'file|max:5120', // 5mb
         ];
     }
 }
