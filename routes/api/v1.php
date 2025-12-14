@@ -14,10 +14,12 @@ Route::middleware('auth.token')
 Route::prefix('v1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::middleware(['auth.token', 'admin'])->group(function () {
+        Route::get('/me/onboarding', [EmployeeOnboardingController::class, 'myOnboarding']);
         Route::post('/onboardings', [EmployeeOnboardingController::class, 'store']);
         Route::get('/onboardings', [EmployeeOnboardingController::class, 'index']);
         Route::get('/onboardings/{onboarding}', [EmployeeOnboardingController::class, 'show']);
 
+        Route::put('/onboardings/{onboarding}/step-1', [EmployeeOnboardingController::class, 'updateStep1']);
         Route::put('/onboardings/{onboarding}/step-2', [EmployeeOnboardingController::class, 'updateStep2']);
         Route::put('/onboardings/{onboarding}/step-3', [EmployeeOnboardingController::class, 'updateStep3']);
         // Route::put('/onboardings/{onboarding}/step-4', [EmployeeOnboardingController::class, 'updateStep4']);

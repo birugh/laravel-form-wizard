@@ -56,6 +56,23 @@ class EmployeeOnboardingController extends Controller
         ]);
     }
 
+    public function updateStep1(
+        StorePersonalInformationRequest $request,
+        EmployeeOnboarding $onboarding
+    ) {
+        $this->authorize('update', $onboarding);
+
+        $onboarding->update([
+            'personal_information' => $request->validated(),
+        ]);
+
+        return response()->json([
+            'data' => new EmployeeOnboardingResource($onboarding->refresh()),
+            'success' => true,
+            'message' => 'Job details saved successfully',
+        ])->setStatusCode(Response::HTTP_OK);
+    }
+
     public function updateStep2(
         StoreJobDetailsRequest $request,
         EmployeeOnboarding $onboarding
@@ -136,37 +153,65 @@ class EmployeeOnboardingController extends Controller
 
         $data = [
             'personal_information' => $onboarding->personal_information,
-            'job_details' => $onboarding->job_details,
-            'access_rights' => $onboarding->access_rights,
-            'evidences' => $onboarding->evidences,
+            'job_details'          => $onboarding->job_details,
+            'access_rights'        => $onboarding->access_rights,
+            'evidences'            => $onboarding->evidences,
         ];
 
         validator($data, SubmitOnboardingRequest::rules())->validate();
 
-        DB::transaction(function () use ($onboarding) {
-            User::create([
-                'name' => $onboarding->personal_information['name'],
-                'email' => $onboarding->personal_information['email'],
-                'password' => Hash::make('password123'),
-                'role' => 'user',
+        $user = DB::transaction(function () use ($onboarding) {
+            $user = User::create([
+                'name'      => $onboarding->personal_information['name'],
+                'email'     => $onboarding->personal_information['email'],
+                'password'  => Hash::make('password123'),
+                'role'      => 'user',
                 'is_active' => true,
             ]);
 
             $onboarding->update([
-                'status' => OnboardingStatus::SUBMITTED,
+                'status'       => OnboardingStatus::SUBMITTED,
                 'submitted_at' => now(),
             ]);
+
+            return $user;
         });
 
+        $onboarding->refresh();
+
         return response()->json([
-            // 'data' => new EmployeeOnboardingResource($onboarding->refresh()),
             'data' => [
-                'id' => $onboarding->id,
-                'status' => OnboardingStatus::SUBMITTED,
+                'id'           => $onboarding->id,
+                'status'       => $onboarding->status,
                 'submitted_at' => $onboarding->submitted_at,
             ],
             'success' => true,
             'message' => 'Employee onboarding submitted successfully',
-        ])->setStatusCode(Response::HTTP_OK);
+            'user_id' => $user->id,
+        ], Response::HTTP_OK);
+    }
+
+
+    public function myOnboarding()
+    {
+        $user = Auth::user();
+
+        if ($user->role !== 'user') {
+            abort(403, 'Only user can access this endpoint');
+        }
+
+        $onboarding = EmployeeOnboarding::where('user_id', $user->id)->first();
+
+        if (!$onboarding) {
+            return response()->json([
+                'message' => 'Onboarding data not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => new EmployeeOnboardingResource($onboarding),
+            'message' => 'My onboarding retrieved successfully',
+        ]);
     }
 }
